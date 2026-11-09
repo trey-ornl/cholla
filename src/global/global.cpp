@@ -198,6 +198,24 @@ void Parse_Param(char *name, char *value, struct Parameters *parms)
     parms->ny = atoi(value);
   } else if (strcmp(name, "nz") == 0) {
     parms->nz = atoi(value);
+  } else if (strcmp(name, "scheme") == 0) {
+    if (strcmp(value, "LF") == 0) {
+      parms->scheme = Scheme::LF;
+    } else if (strcmp(value, "LF2") == 0) {
+      parms->scheme = Scheme::LF2;
+    } else if (strcmp(value, "LF2LR") == 0) {
+      parms->scheme = Scheme::LF2LR;
+    } else if (strcmp(value, "LFR2") == 0) {
+      parms->scheme = Scheme::LFR2;
+    } else if (strcmp(value, "LFR2") == 0) {
+      parms->scheme = Scheme::LFR2;
+    } else if (strcmp(value, "LFR2") == 0) {
+      parms->scheme = Scheme::LFR2;
+    } else if (strcmp(value, "LFR2") == 0) {
+      parms->scheme = Scheme::LFR2;
+    } else {
+      parms->scheme = Scheme::Reimann;
+    }
 #ifdef STATIC_GRAV
   } else if (strcmp(name, "custom_grav") == 0) {
     parms->custom_grav = atoi(value);

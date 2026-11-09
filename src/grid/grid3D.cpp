@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <utility>
 #ifdef HDF5
   #include <hdf5.h>
 #endif
@@ -10,6 +11,7 @@
 #include "../grid/grid3D.h"
 #include "../grid/grid_enum.h"    // provides grid_enum
 #include "../hydro/hydro_cuda.h"  // provides Calc_dt_GPU
+#include "../integrators/LF_1D_cuda.h"
 #include "../integrators/VL_1D_cuda.h"
 #include "../integrators/VL_2D_cuda.h"
 #include "../integrators/VL_3D_cuda.h"
@@ -155,6 +157,15 @@ void Grid3D::Initialize(struct Parameters *P)
 
   // Set the CFL coefficient (a global variable)
   C_cfl = 0.3;
+
+  H.scheme = P->scheme;
+  switch (H.scheme) {
+    case Scheme::LF:
+      C_cfl = 1.0;
+      break;
+    default:
+      break;
+  }
 
 #ifdef AVERAGE_SLOW_CELLS
   H.min_dt_slow = 1e-100;  // Initialize the minumum dt to a tiny number
@@ -431,12 +442,16 @@ void Grid3D::Execute_Hydro_Integrator(void)
   // Run the hydro integrator on the grid
   if (H.nx > 1 && H.ny == 1 && H.nz == 1)  // 1D
   {
+    if (H.scheme == Scheme::LF) {
+      LF_Algorithm_1D_CUDA(C.d_Energy, C.d_density, C.d_momentum_x, H.nx, H.dx, H.dt);
+    } else {
 #ifdef VL
-    VL_Algorithm_1D_CUDA(C.device, H.nx, x_off, H.n_ghost, H.dx, H.xbound, H.dt, H.n_fields, H.custom_grav);
+      VL_Algorithm_1D_CUDA(C.device, H.nx, x_off, H.n_ghost, H.dx, H.xbound, H.dt, H.n_fields, H.custom_grav);
 #endif  // VL
 #ifdef SIMPLE
-    Simple_Algorithm_1D_CUDA(C.device, H.nx, x_off, H.n_ghost, H.dx, H.xbound, H.dt, H.n_fields, H.custom_grav);
+      Simple_Algorithm_1D_CUDA(C.device, H.nx, x_off, H.n_ghost, H.dx, H.xbound, H.dt, H.n_fields, H.custom_grav);
 #endif                                           // SIMPLE
+    }
   } else if (H.nx > 1 && H.ny > 1 && H.nz == 1)  // 2D
   {
 #ifdef VL
@@ -632,7 +647,11 @@ void Grid3D::FreeMemory(void)
 // If memory is single allocated, free the memory at the end of the simulation.
 #ifdef VL
   if (H.nx > 1 && H.ny == 1 && H.nz == 1) {
-    Free_Memory_VL_1D();
+    if (H.scheme == Scheme::LF) {
+      Free_Memory_LF_1D();
+    } else {
+      Free_Memory_VL_1D();
+    }
   }
   if (H.nx > 1 && H.ny > 1 && H.nz == 1) {
     Free_Memory_VL_2D();

@@ -82,9 +82,9 @@ int main(int argc, char *argv[])
   chprintf("Git Commit Hash = %s\n", GIT_HASH);
   chprintf("Macro Flags     = %s\n", MACRO_FLAGS);
   chprintf(
-      "Parameter values:  nx = %d, ny = %d, nz = %d, tout = %f, init = %s, "
+      "Parameter values:  nx = %d, ny = %d, nz = %d, tout = %f, init = %s, scheme = %s, "
       "boundaries = %d %d %d %d %d %d\n",
-      P.nx, P.ny, P.nz, P.tout, P.init, P.xl_bcnd, P.xu_bcnd, P.yl_bcnd, P.yu_bcnd, P.zl_bcnd, P.zu_bcnd);
+      P.nx, P.ny, P.nz, P.tout, P.init, str(P.scheme), P.xl_bcnd, P.xu_bcnd, P.yl_bcnd, P.yu_bcnd, P.zl_bcnd, P.zu_bcnd);
 
   bool is_restart = false;
   if (strcmp(P.init, "Read_Grid") == 0) {

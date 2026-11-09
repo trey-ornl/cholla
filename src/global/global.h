@@ -180,10 +180,28 @@ extern int root;   /*rank of root process*/
  */
 void Init_Global_Parallel_Vars_No_MPI();
 
+enum struct Scheme { Reimann, LF, LF2, LF2LR, LFR2, LFR3, LFR4, LFR6 };
+
+static inline const char* str(Scheme scheme)
+{
+  switch (scheme) {
+    case Scheme::Reimann: return "Reimann";
+    case Scheme::LF: return "LF";
+    case Scheme::LF2: return "LF2";
+    case Scheme::LF2LR: return "LF2LR";
+    case Scheme::LFR2: return "LFR2";
+    case Scheme::LFR3: return "LFR3";
+    case Scheme::LFR4: return "LFR4";
+    case Scheme::LFR6: return "LFR6";
+    default: return "unknown";
+  }
+}
+
 struct Parameters {
   int nx;
   int ny;
   int nz;
+  Scheme scheme = Scheme::Reimann;
   double tout;
   double outstep;
   int n_steps_output;

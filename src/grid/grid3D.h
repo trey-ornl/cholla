@@ -274,6 +274,8 @@ struct Header {
   Real grain_radius;
   #endif
 #endif
+
+  Scheme scheme;
 };
 
 /*! \class Grid3D
