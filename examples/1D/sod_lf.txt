@@ -4,13 +4,13 @@
 
 ################################################
 # number of grid cells in the x dimension
-nx=101
+nx=300
 # number of grid cells in the y dimension
 ny=1
 # number of grid cells in the z dimension
 nz=1
 # use Lax-Friedrichs scheme
-scheme=LF
+scheme=LF2
 # final output time
 tout=0.2
 # time interval for output
