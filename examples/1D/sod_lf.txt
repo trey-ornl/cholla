@@ -10,7 +10,7 @@ ny=1
 # number of grid cells in the z dimension
 nz=1
 # use Lax-Friedrichs scheme
-scheme=LF2
+scheme=LF2LR
 # final output time
 tout=0.2
 # time interval for output

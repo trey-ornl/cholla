@@ -13,6 +13,7 @@
 #include "../hydro/hydro_cuda.h"  // provides Calc_dt_GPU
 #include "../integrators/LF_1D_cuda.h"
 #include "../integrators/LF2_1D_cuda.h"
+#include "../integrators/LF2LR_1D_cuda.h"
 #include "../integrators/VL_1D_cuda.h"
 #include "../integrators/VL_2D_cuda.h"
 #include "../integrators/VL_3D_cuda.h"
@@ -163,6 +164,7 @@ void Grid3D::Initialize(struct Parameters *P)
   switch (H.scheme) {
     case Scheme::LF:
     case Scheme::LF2:
+    case Scheme::LF2LR:
       C_cfl = 1.0;
       break;
     default:
@@ -448,6 +450,8 @@ void Grid3D::Execute_Hydro_Integrator(void)
       LF_Algorithm_1D_CUDA(C.d_Energy, C.d_density, C.d_momentum_x, H.nx, H.dx, H.dt);
     } else if (H.scheme == Scheme::LF2) {
       LF2_Algorithm_1D_CUDA(C.d_Energy, C.d_density, C.d_momentum_x, H.nx, H.dx, H.dt);
+    } else if (H.scheme == Scheme::LF2LR) {
+      LF2LR_Algorithm_1D_CUDA(C.d_Energy, C.d_density, C.d_momentum_x, H.nx, H.dx, H.dt);
     } else {
 #ifdef VL
       VL_Algorithm_1D_CUDA(C.device, H.nx, x_off, H.n_ghost, H.dx, H.xbound, H.dt, H.n_fields, H.custom_grav);
@@ -655,6 +659,8 @@ void Grid3D::FreeMemory(void)
       Free_Memory_LF_1D();
     } else if (H.scheme == Scheme::LF2) {
       Free_Memory_LF2_1D();
+    } else if (H.scheme == Scheme::LF2LR) {
+      Free_Memory_LF2LR_1D();
     } else {
       Free_Memory_VL_1D();
     }
